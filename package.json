@@ -1,6 +1,6 @@
 {
   "name": "@crashmax/vite-plugin-compress",
-  "version": "2.2.0-1",
+  "version": "2.2.0",
   "type": "module",
   "description": "Compress your bundle + assets from Vite",
   "author": "Alec Larson",
