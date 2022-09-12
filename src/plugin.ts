@@ -76,7 +76,7 @@ const htmlExt = /\.html$/
 const pngExt = /\.png$/
 const svgExt = /\.svg$/
 
-export default (opts: PluginOptions = {}): Plugin[] => {
+export function Compress(opts: PluginOptions = {}): Plugin[] {
   const excludeRegex = opts.exclude ? globRegex(opts.exclude) : /^$/
   const brotliExcludeRegex =
     opts.brotli && opts.brotli !== true && opts.brotli.exclude
@@ -111,7 +111,7 @@ export default (opts: PluginOptions = {}): Plugin[] => {
       const svg = await svgOptimizer.optimize(content, { path: filePath })
       return svg.data
     } catch (err) {
-      debug(`Failed to optimize "${filePath}". ` + err.message)
+      debug(`Failed to optimize "${filePath}". ` + (err as Error).message)
       return content
     }
   }
@@ -130,6 +130,7 @@ export default (opts: PluginOptions = {}): Plugin[] => {
         const pngFiles = crawl(publicDir, {
           only: ['*.png'],
         })
+        // @ts-ignore
         this.resolveBuiltUrl = url => {
           if (url[0] === '/' && pngFiles.includes(url.slice(1))) {
             return url.replace(pngExt, '.webp')
@@ -140,6 +141,7 @@ export default (opts: PluginOptions = {}): Plugin[] => {
       if (opts.svgo !== false)
         // Optimize any inlined SVGs. Non-inlined SVGs are optimized
         // in the `closeBundle` phase.
+        // @ts-ignore
         this.transform = async function (code, id) {
           if (svgExt.test(id)) {
             let exported = /^export default (".+?")$/.exec(code)?.[1]
@@ -160,7 +162,7 @@ export default (opts: PluginOptions = {}): Plugin[] => {
               console.log('optimizeSvg:', { id, content, optimized })
               return code.replace(exported, JSON.stringify(optimized))
             } catch (err) {
-              debug(`Failed to transform "${id}". ` + err.message)
+              debug(`Failed to transform "${id}". ` + (err as Error).message)
             }
           }
         }
